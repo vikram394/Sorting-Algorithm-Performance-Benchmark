@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorting Algorithm Benchmark Web App | DAA Lab</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Background Laboratory Grid Overlay -->
+    <div class="lab-grid-bg"></div>
+
+    <!-- Main Container -->
+    <div class="app-layout">
+
+        <!-- Top Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-badge-row">
+                    <span class="lab-badge">DAA &bull; ALGORITHM ANALYSIS</span>
+                    <span class="mono-badge"><span class="pulse-indicator"></span>LAB ENGINE: JS V8 &bull; HIGH-RES TIMER</span>
+                </div>
+                <h1 class="app-title">
+                    <span class="title-subbrand">SORTING LAB</span>
+                    <span class="title-main">Algorithm Performance Benchmark</span>
+                </h1>
+                <p class="app-subtitle">Measure, Compare and Visualize Sorting Algorithms for Varying Input Sizes</p>
+            </div>
+            <div class="header-stats">
+                <div class="header-stat-box">
+                    <span class="stat-label">ALGORITHMS</span>
+                    <span class="stat-value">5 Classical</span>
+                </div>
+                <div class="header-stat-box">
+                    <span class="stat-label">MAX INPUT</span>
+                    <span class="stat-value">5,000 N</span>
+                </div>
+                <div class="header-stat-box">
+                    <span class="stat-label">PRECISION</span>
+                    <span class="stat-value">&plusmn; 0.001 ms</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Grid Dashboard -->
+        <main class="dashboard-grid">
+
+            <!-- Left Column: Input Configuration and Benchmark Controls -->
+            <section class="card input-card">
+                <div class="card-header">
+                    <span class="step-tag">01 INPUT</span>
+                    <h2 class="card-title">Benchmark Parameters</h2>
+                </div>
+                <p class="card-desc">Configure array distribution, dataset magnitude, and statistical repetition counts.</p>
+
+                <div class="form-grid">
+                    <!-- Algorithm Selection -->
+                    <div class="form-group">
+                        <label for="algorithmSelect">Algorithm</label>
+                        <div class="select-wrapper">
+                            <select id="algorithmSelect">
+                                <option value="bubble">Bubble Sort</option>
+                                <option value="selection">Selection Sort</option>
+                                <option value="insertion">Insertion Sort</option>
+                                <option value="merge" selected>Merge Sort</option>
+                                <option value="quick">Quick Sort</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Input Size -->
+                    <div class="form-group">
+                        <label for="inputSize">Input Size (N)</label>
+                        <div class="select-wrapper">
+                            <select id="inputSize">
+                                <option value="100">100 elements</option>
+                                <option value="500">500 elements</option>
+                                <option value="1000" selected>1,000 elements</option>
+                                <option value="2000">2,000 elements</option>
+                                <option value="5000">5,000 elements</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Input Distribution -->
+                    <div class="form-group">
+                        <label for="distributionSelect">Input Distribution</label>
+                        <div class="select-wrapper">
+                            <select id="distributionSelect">
+                                <option value="random" selected>Random (Uniform)</option>
+                                <option value="nearlySorted">Nearly Sorted (~95% in order)</option>
+                                <option value="reverse">Reverse Sorted (Worst Case)</option>
+                                <option value="fewUnique">Few Unique Values (Duplicates)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Benchmark Runs -->
+                    <div class="form-group">
+                        <label for="runCount">Benchmark Runs (Odd Median)</label>
+                        <div class="select-wrapper">
+                            <select id="runCount">
+                                <option value="3">3 runs</option>
+                                <option value="5" selected>5 runs</option>
+                                <option value="7">7 runs</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons-group">
+                    <button id="benchmarkButton" class="btn btn-primary">
+                        <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                        </svg>
+                        Run Benchmark
+                    </button>
+                    <button id="allAlgorithmsButton" class="btn btn-secondary">
+                        <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                            <path d="M4 19h16v2H4zm3-4h10v2H7zm-3-4h16v2H4zm3-4h10v2H7zM4 3h16v2H4z" />
+                        </svg>
+                        Compare All
+                    </button>
+                    <button id="visualizeButton" class="btn btn-tertiary">
+                        <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                            <path d="M8 5v14l11-7z" />
+                        </svg>
+                        Visualize Sorting
+                    </button>
+                </div>
+
+                <!-- Real-time Status Strip -->
+                <div class="status-strip">
+                    <div class="status-indicator">
+                        <span class="status-dot"></span>
+                        <span class="status-caption">STATUS:</span>
+                    </div>
+                    <span id="status" class="status-message">Laboratory initialized. Ready for benchmark execution.</span>
+                </div>
+            </section>
+
+            <!-- Right Column: Benchmark Results Cards & Metrics -->
+            <section class="card results-card">
+                <div class="card-header">
+                    <span class="step-tag">02 BENCHMARK</span>
+                    <h2 class="card-title">Execution Telemetry</h2>
+                </div>
+                <p class="card-desc">Statistical evaluation obtained via high-resolution DOM timer.</p>
+
+                <!-- 3 Result Metric Cards -->
+                <div class="metric-cards-container">
+                    <!-- Card 1: Selected Algorithm -->
+                    <div class="metric-card metric-card-algorithm">
+                        <div class="metric-card-top">
+                            <span class="metric-label">Selected Algorithm</span>
+                            <span class="metric-badge-code">ALGO</span>
+                        </div>
+                        <div id="resultAlgorithm" class="metric-value">Merge Sort</div>
+                        <div class="metric-footer" id="algoComplexityBadge">Theoretical: O(N log N)</div>
+                    </div>
+
+                    <!-- Card 2: Input Size -->
+                    <div class="metric-card metric-card-size">
+                        <div class="metric-card-top">
+                            <span class="metric-label">Input Size</span>
+                            <span class="metric-badge-code">SIZE</span>
+                        </div>
+                        <div id="resultSize" class="metric-value">1,000 items</div>
+                        <div class="metric-footer" id="distributionBadge">Distribution: Random</div>
+                    </div>
+
+                    <!-- Card 3: Median Execution Time -->
+                    <div class="metric-card metric-card-time">
+                        <div class="metric-card-top">
+                            <span class="metric-label">Median Execution Time</span>
+                            <span class="metric-badge-code">MEDIAN</span>
+                        </div>
+                        <div id="resultTime" class="metric-value">0.000 ms</div>
+                        <div class="metric-footer" id="runsSummaryBadge">Sample: 5 Iterations</div>
+                    </div>
+                </div>
+
+                <!-- Verification & Quality Audit Box -->
+                <div class="verification-box">
+                    <div class="verification-header">
+                        <svg class="verify-icon" viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="verify-title">Verification & Correctness Assertion</span>
+                    </div>
+                    <p id="verificationText" class="verify-detail">Array monotonicity check: Ready to verify strictly non-decreasing output order upon run.</p>
+                    <div class="run-times-breakdown" id="runTimesBreakdown">
+                        <span class="runs-label">Individual Runs:</span>
+                        <span id="runTimesList" class="runs-list">—</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Full-Width Section: Performance Graph & Comparative Matrix -->
+            <section class="card graph-card full-width">
+                <div class="card-header-flex">
+                    <div>
+                        <span class="step-tag">03 PERFORMANCE</span>
+                        <h2 class="card-title">Empirical Scaling Analysis & Execution Graph</h2>
+                        <p class="card-desc">Execution time (ms) plotted against input size (N) across all 5 benchmarked algorithms.</p>
+                    </div>
+                    <!-- Graph Legend -->
+                    <div class="graph-legend-bar">
+                        <div class="legend-item" data-algo="bubble">
+                            <span class="legend-color-dot bubble-dot"></span>
+                            <span class="legend-name">Bubble Sort</span>
+                            <span class="legend-order">O(N²)</span>
+                        </div>
+                        <div class="legend-item" data-algo="selection">
+                            <span class="legend-color-dot selection-dot"></span>
+                            <span class="legend-name">Selection Sort</span>
+                            <span class="legend-order">O(N²)</span>
+                        </div>
+                        <div class="legend-item" data-algo="insertion">
+                            <span class="legend-color-dot insertion-dot"></span>
+                            <span class="legend-name">Insertion Sort</span>
+                            <span class="legend-order">O(N²)</span>
+                        </div>
+                        <div class="legend-item" data-algo="merge">
+                            <span class="legend-color-dot merge-dot"></span>
+                            <span class="legend-name">Merge Sort</span>
+                            <span class="legend-order">O(N log N)</span>
+                        </div>
+                        <div class="legend-item" data-algo="quick">
+                            <span class="legend-color-dot quick-dot"></span>
+                            <span class="legend-name">Quick Sort</span>
+                            <span class="legend-order">O(N log N)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Graph Utility Toolbar -->
+                <div class="graph-toolbar-row">
+                    <div class="graph-toolbar-left">
+                        <span class="toolbar-telemetry-item"><span class="telemetry-live-dot"></span> REAL-TIME TELEMETRY PLOTTER</span>
+                        <span class="telemetry-hint">Tip: Click legend items to isolate or hover data points for inspection</span>
+                    </div>
+                    <div class="graph-toolbar-right">
+                        <button id="toggleCurveBtn" class="graph-tool-btn" title="Toggle between smooth cubic curves and straight polylines">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                                <path d="M3.5 18.5l6-6 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 17.08z" />
+                            </svg>
+                            <span>Curve: Smooth</span>
+                        </button>
+                        <button id="downloadGraphBtn" class="graph-tool-btn" title="Export high-resolution PNG image of this benchmark plot">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+                            </svg>
+                            <span>Export PNG</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Canvas Container -->
+                <div class="canvas-wrapper">
+                    <canvas id="benchmarkCanvas" width="980" height="380"></canvas>
+                    <div id="canvasTooltip" class="canvas-tooltip"></div>
+                </div>
+
+                <!-- Comparative Matrix Table -->
+                <div class="comparison-table-wrapper">
+                    <div class="table-headline">
+                        <span class="table-headline-title">Multi-Algorithm Comparative Matrix</span>
+                        <span class="table-headline-sub">Generated with identical arrays across N = 100, 500, 1000, 2000</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="benchmark-table">
+                            <thead>
+                                <tr>
+                                    <th>Algorithm</th>
+                                    <th>Complexity (Avg)</th>
+                                    <th>Space</th>
+                                    <th>Stability</th>
+                                    <th>N = 100</th>
+                                    <th>N = 500</th>
+                                    <th>N = 1000</th>
+                                    <th>N = 2000</th>
+                                    <th>Audit Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="resultTableBody">
+                                <tr data-algo="bubble">
+                                    <td><span class="algo-pill pill-bubble">Bubble Sort</span></td>
+                                    <td><span class="code-tag">O(N²)</span></td>
+                                    <td>O(1)</td>
+                                    <td>Yes</td>
+                                    <td class="cell-100">—</td>
+                                    <td class="cell-500">—</td>
+                                    <td class="cell-1000">—</td>
+                                    <td class="cell-2000">—</td>
+                                    <td><span class="status-pill status-idle">Ready</span></td>
+                                </tr>
+                                <tr data-algo="selection">
+                                    <td><span class="algo-pill pill-selection">Selection Sort</span></td>
+                                    <td><span class="code-tag">O(N²)</span></td>
+                                    <td>O(1)</td>
+                                    <td>No</td>
+                                    <td class="cell-100">—</td>
+                                    <td class="cell-500">—</td>
+                                    <td class="cell-1000">—</td>
+                                    <td class="cell-2000">—</td>
+                                    <td><span class="status-pill status-idle">Ready</span></td>
+                                </tr>
+                                <tr data-algo="insertion">
+                                    <td><span class="algo-pill pill-insertion">Insertion Sort</span></td>
+                                    <td><span class="code-tag">O(N²)</span></td>
+                                    <td>O(1)</td>
+                                    <td>Yes</td>
+                                    <td class="cell-100">—</td>
+                                    <td class="cell-500">—</td>
+                                    <td class="cell-1000">—</td>
+                                    <td class="cell-2000">—</td>
+                                    <td><span class="status-pill status-idle">Ready</span></td>
+                                </tr>
+                                <tr data-algo="merge">
+                                    <td><span class="algo-pill pill-merge">Merge Sort</span></td>
+                                    <td><span class="code-tag">O(N log N)</span></td>
+                                    <td>O(N)</td>
+                                    <td>Yes</td>
+                                    <td class="cell-100">—</td>
+                                    <td class="cell-500">—</td>
+                                    <td class="cell-1000">—</td>
+                                    <td class="cell-2000">—</td>
+                                    <td><span class="status-pill status-idle">Ready</span></td>
+                                </tr>
+                                <tr data-algo="quick">
+                                    <td><span class="algo-pill pill-quick">Quick Sort</span></td>
+                                    <td><span class="code-tag">O(N log N)</span></td>
+                                    <td>O(log N)</td>
+                                    <td>No</td>
+                                    <td class="cell-100">—</td>
+                                    <td class="cell-500">—</td>
+                                    <td class="cell-1000">—</td>
+                                    <td class="cell-2000">—</td>
+                                    <td><span class="status-pill status-idle">Ready</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Full-Width Section: Step-by-Step Visualization -->
+            <section class="card visualizer-card full-width">
+                <div class="card-header-flex">
+                    <div>
+                        <span class="step-tag">04 VISUALIZATION</span>
+                        <h2 class="card-title">Live Step-by-Step Execution Animator</h2>
+                        <p class="card-desc">Visual trace of comparisons, element migrations, and sorted partition construction.</p>
+                    </div>
+                    <!-- Visualizer Legend -->
+                    <div class="viz-legend-bar">
+                        <div class="viz-legend-item">
+                            <span class="viz-dot viz-default-dot"></span>
+                            <span>Unsorted</span>
+                        </div>
+                        <div class="viz-legend-item">
+                            <span class="viz-dot viz-compare-dot"></span>
+                            <span>Comparing (Golden Yellow)</span>
+                        </div>
+                        <div class="viz-legend-item">
+                            <span class="viz-dot viz-swap-dot"></span>
+                            <span>Swapping (Coral Red)</span>
+                        </div>
+                        <div class="viz-legend-item">
+                            <span class="viz-dot viz-sorted-dot"></span>
+                            <span>Sorted (Emerald Green)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visualizer Bar Canvas/DOM Display -->
+                <div class="viz-container-box">
+                    <div id="arrayContainer" class="array-container">
+                        <!-- Animated vertical bars will be injected here dynamically by script.js -->
+                    </div>
+                </div>
+
+                <!-- Visualizer Control Toolbar -->
+                <div class="viz-toolbar">
+                    <div class="viz-toolbar-left">
+                        <span class="viz-meta-item">Array Size: <strong>32 bars</strong></span>
+                        <span class="viz-meta-item">Comparisons: <strong id="vizComparisons">0</strong></span>
+                        <span class="viz-meta-item">Swaps/Writes: <strong id="vizSwaps">0</strong></span>
+                        <span class="viz-meta-item">Active Phase: <strong id="vizPhase">Awaiting start</strong></span>
+                    </div>
+                    <div class="viz-toolbar-right">
+                        <label for="vizSpeedRange" class="viz-speed-label">Anim Speed:</label>
+                        <input type="range" id="vizSpeedRange" min="5" max="150" value="40" class="viz-slider" title="Animation speed delay in milliseconds">
+                        <button id="resetVizButton" class="btn btn-outline-sm">New Array</button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Professional Footer -->
+        <footer class="app-footer">
+            <div class="footer-inner">
+                <div>
+                    <strong>DAA Mini Project:</strong> Design & Analysis of Algorithms Laboratory Benchmark
+                </div>
+                <div class="footer-meta">
+                    <span>Vanilla JavaScript • HTML Canvas • CSS Grid</span>
+                    <span>College Academic Assessment</span>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Chatbot Floating Widget (CLOSED by default as required) -->
+    <div class="chatbot-wrapper">
+        <!-- Chatbot Toggle Trigger Button -->
+        <button id="chatbotButton" class="chatbot-trigger-btn" aria-label="Open DAA Lab Assistant">
+            <span class="chatbot-trigger-sparkle">✦</span>
+            <span class="chatbot-trigger-text">✦ Ask AI</span>
+        </button>
+
+        <!-- Chatbot Window Box (Hidden initially) -->
+        <div id="chatbotBox" class="chatbot-box">
+            <!-- Chatbot Header -->
+            <div class="chatbot-header">
+                <div class="chatbot-header-info">
+                    <span class="chatbot-avatar">✦</span>
+                    <div>
+                        <div class="chatbot-title">DAA Lab Assistant</div>
+                        <div class="chatbot-subtitle">Local Rule-Based Viva Assistant</div>
+                    </div>
+                </div>
+                <button id="closeChatbot" class="chatbot-close-btn" aria-label="Close Assistant">&times;</button>
+            </div>
+
+            <!-- Quick Suggestion Topic Chips -->
+            <div class="chatbot-chips-bar">
+                <button class="chip-btn" data-topic="Project">Project</button>
+                <button class="chip-btn" data-topic="Algorithms">Algorithms</button>
+                <button class="chip-btn" data-topic="Complexity">Complexity</button>
+                <button class="chip-btn" data-topic="Graph">Graph</button>
+                <button class="chip-btn" data-topic="Median">Median</button>
+                <button class="chip-btn" data-topic="Viva">Viva</button>
+            </div>
+
+            <!-- Chat Messages Scroll Area -->
+            <div id="chatbotMessages" class="chatbot-messages">
+                <!-- Default Welcome Message -->
+                <div class="chat-message bot-msg">
+                    <div class="msg-bubble">
+                        <strong>Hello! I am your DAA Lab Assistant.</strong><br>
+                        I can answer technical questions about this project, time &amp; space complexities, benchmarking methodology, median calculation, and common viva questions.<br><br>
+                        <em>Click any chip above or type a question below!</em>
+                    </div>
+                    <span class="msg-time">Just now</span>
+                </div>
+            </div>
+
+            <!-- Chat Input Field and Send Button -->
+            <div class="chatbot-input-row">
+                <input type="text" id="chatbotInput" placeholder="Ask about algorithms, complexities, viva..." autocomplete="off">
+                <button id="sendChatbot" class="chatbot-send-btn" aria-label="Send message">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+
+</html>
